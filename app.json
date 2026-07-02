@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "mobile",
+    "name": "DhoobiGO",
     "slug": "mobile",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -36,6 +36,7 @@
       "eas": {
         "projectId": "c6d87663-d71f-4609-ace1-fa185b969722"
       }
-    }
+    },
+    "owner": "dev_m_sheraz"
   }
 }
