@@ -14,7 +14,7 @@ export const SOCKET_URL = `https://${BASE_IP}`;
 export const getImageUrl = (path) => {
   if (!path) return null;
   if (path.startsWith('http')) return path;
-  return `http://${BASE_IP}:${BASE_PORT}${path}`;
+  return `https://${BASE_IP}}${path}`;
 };
 
 const api = axios.create({
