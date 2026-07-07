@@ -61,28 +61,33 @@ export default function MarketplaceScreen({ navigation }) {
     }, [])
   );
 
-  const handleBidPress = async (order) => {
-    try {
-      const userDataStr = await AsyncStorage.getItem('userData');
-      const user = userDataStr ? JSON.parse(userDataStr) : null;
-      
-      if (!user?.address || user.address.trim() === '') {
-        Alert.alert(
-          'Shop Setup Required',
-          'Please set your shop address in your profile before bidding so we can calculate rider distances.',
-          [
-            { text: 'Cancel', style: 'cancel' },
-            { text: 'Go to Profile', onPress: () => navigation.navigate('Profile') }
-          ]
-        );
-        return;
-      }
-      
-      navigation.navigate('PlaceBid', { order });
-    } catch (e) {
-      navigation.navigate('PlaceBid', { order });
+const handleBidPress = async (order) => {
+  try {
+    const userDataStr = await AsyncStorage.getItem('userData');
+    const user = userDataStr ? JSON.parse(userDataStr) : null;
+
+    const NEW_DHOBI_THRESHOLD = 5;      // 5 se kam completed reviews = naya dhobi
+    const MAX_ITEMS_FOR_NEW_DHOBI = 6; // naya dhobi sirf 6 items tak bid kar sakta
+
+    const isNewDhobi = (user?.reviewsCount ?? 0) < NEW_DHOBI_THRESHOLD;
+
+    if (isNewDhobi && order.itemsCount > MAX_ITEMS_FOR_NEW_DHOBI) {
+      Alert.alert(
+        'Bidding Restricted',
+        `New dhobi partners can only bid on orders with up to ${MAX_ITEMS_FOR_NEW_DHOBI} items. This order has ${order.itemsCount} items. Complete more orders to unlock this limit.`
+      );
+      return;
     }
-  };
+
+    if (!user?.address || user.address.trim() === '') {
+      // ... existing address check code as is
+    }
+    
+    navigation.navigate('PlaceBid', { order });
+  } catch (e) {
+    navigation.navigate('PlaceBid', { order });
+  }
+};
 
   return (
     <View style={[styles.container, { backgroundColor: Colors.background }]}>

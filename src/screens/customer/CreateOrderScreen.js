@@ -328,9 +328,9 @@ export default function CreateOrderScreen({ navigation }) {
               </TouchableOpacity>
             </View>
             <View style={styles.insuranceFooter}>
-              <Text style={styles.insurancePriceText}>Cost: <Text style={{ fontWeight: 'bold' }}>Rs. 30</Text></Text>
-              <Ionicons name="information-circle-outline" size={14} color={Colors.textMuted} />
-            </View>
+  <Text style={styles.insurancePriceText}>Cost: <Text style={{ fontWeight: 'bold' }}>10% of final bid amount</Text></Text>
+  <Ionicons name="information-circle-outline" size={14} color={Colors.textMuted} />
+</View>
           </View>
 
           {/* Address Label with Actions */}

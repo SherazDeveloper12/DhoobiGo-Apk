@@ -7,12 +7,14 @@ import { PrimaryButton } from '../../components/UIComponents';
 import { paymentService } from '../../services/api';
 
 export default function PaymentScreen({ navigation, route }) {
-  const { orderId, bidId, bid } = route?.params || { 
+  const { orderId, bidId, bid, isInsured } = route?.params || { 
     orderId: 0, 
-    bid: { price: 0, dhobiName: 'Service Provider' } 
+    bid: { price: 0, dhobiName: 'Service Provider' },
+    isInsured: false
   };
 
-  const totalAmount = (bid?.price || 0) + 50;
+  const insuranceAmount = isInsured ? Math.round((bid?.price || 0) * 0.10) : 0;
+  const totalAmount = (bid?.price || 0) + 50 + insuranceAmount;
   const [selectedMethod, setSelectedMethod] = useState('cod');
   const [loading, setLoading] = useState(false);
   const [walletBalance, setWalletBalance] = useState(0);
@@ -93,6 +95,12 @@ export default function PaymentScreen({ navigation, route }) {
               <Text style={styles.summaryText}>Service Platform Fee</Text>
               <Text style={styles.summaryValue}>Rs. 50</Text>
             </View>
+            {isInsured && (
+  <View style={styles.summaryRow}>
+    <Text style={styles.summaryText}>Insurance Fee (10%)</Text>
+    <Text style={styles.summaryValue}>Rs. {insuranceAmount}</Text>
+  </View>
+)}
             <View style={[styles.summaryRow, { marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: Colors.cardBorder }]}>
               <Text style={styles.totalLabel}>Payable Total</Text>
               <Text style={styles.totalValue}>Rs. {totalAmount}</Text>

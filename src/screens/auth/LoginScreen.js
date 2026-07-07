@@ -46,8 +46,10 @@ export default function LoginScreen({ navigation }) {
       }
 
       await AsyncStorage.setItem('userToken', token);
-      await AsyncStorage.setItem('userData', JSON.stringify({ userId, fullName, role: userRole }));
-
+       await AsyncStorage.setItem('userData', JSON.stringify({ 
+  userId, fullName, role: userRole, 
+  reviewsCount: response.data.reviewsCount ?? 0 
+}));
       setLoading(false);
       
       if (userRole === 'Customer') navigation.replace('CustomerTabs');

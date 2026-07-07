@@ -17,41 +17,52 @@ export default function PlaceBidScreen({ navigation, route }) {
   const [loading, setLoading] = useState(false);
 
   const handlePlaceBid = async () => {
-    if (!amount || isNaN(amount)) {
-      Alert.alert('Invalid Amount', 'Please enter a valid bid amount.');
+  if (!amount || isNaN(amount)) {
+    Alert.alert('Invalid Amount', 'Please enter a valid bid amount.');
+    return;
+  }
+
+  setLoading(true);
+  try {
+    const userDataStr = await AsyncStorage.getItem('userData');
+    if (!userDataStr) {
+      Alert.alert('Session Expired', 'Please log in again.');
+      navigation.replace('Login');
+      return;
+    }
+    const { userId, reviewsCount } = JSON.parse(userDataStr);
+
+    // NEW: New-dhobi bidding limit check
+    const isNewDhobi = (reviewsCount ?? 0) < 5;
+    if (isNewDhobi && order.itemsCount > 6) {
+      setLoading(false);
+      Alert.alert(
+        'Bidding Restricted',
+        'New dhobi partners can only bid on orders with up to 6 items. Complete more orders to unlock this limit.'
+      );
       return;
     }
 
-    setLoading(true);
-    try {
-      const userDataStr = await AsyncStorage.getItem('userData');
-      if (!userDataStr) {
-        Alert.alert('Session Expired', 'Please log in again.');
-        navigation.replace('Login');
-        return;
-      }
-      const { userId } = JSON.parse(userDataStr);
+    await orderService.placeBid({
+      orderId: order.id,
+      dhobiId: userId,
+      price: parseFloat(amount),
+      deliveryDays: parseInt(deliveryDays)
+    });
 
-      await orderService.placeBid({
-        orderId: order.id,
-        dhobiId: userId,
-        price: parseFloat(amount),
-        deliveryDays: parseInt(deliveryDays)
-      });
-
-      setLoading(false);
-      Alert.alert(
-        'Bid Placed!',
-        'Your bid has been submitted. You will be notified if the customer selects you.',
-        [{ text: 'OK', onPress: () => navigation.replace('DhobiTabs') }]
-      );
-    } catch (error) {
-      setLoading(false);
-      const data = error.response?.data;
-      const msg = data?.Message || data?.message || (typeof data === 'string' ? data : null) || 'Failed to place bid. You may have already bid on this order.';
-      Alert.alert('Bidding Error', msg);
-    }
-  };
+    setLoading(false);
+    Alert.alert(
+      'Bid Placed!',
+      'Your bid has been submitted. You will be notified if the customer selects you.',
+      [{ text: 'OK', onPress: () => navigation.replace('DhobiTabs') }]
+    );
+  } catch (error) {
+    setLoading(false);
+    const data = error.response?.data;
+    const msg = data?.Message || data?.message || (typeof data === 'string' ? data : null) || 'Failed to place bid. You may have already bid on this order.';
+    Alert.alert('Bidding Error', msg);
+  }
+};
 
   return (
     <View style={[styles.container, { backgroundColor: Colors.background }]}>

@@ -125,7 +125,12 @@ export default function ViewBidsScreen({ route, navigation }) {
         // This is a Dhobi Bid for laundry service
         await orderService.selectBid(orderId, bidId);
         Alert.alert('Bid Selected', 'Proceeding to payment...');
-        navigation.navigate('Payment', { orderId, bidId, bid: bids.find(b => b.id === bidId) });
+        navigation.navigate('Payment', { 
+  orderId, 
+  bidId, 
+  bid: bids.find(b => b.id === bidId),
+  isInsured: order?.isInsured || false
+});
       }
     } catch (error) {
       setSelectedBidId(null);
